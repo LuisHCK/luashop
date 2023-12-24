@@ -5,7 +5,7 @@ services:
         build: .
         volumes:
             - .:/opt/app
-            - ./node_modules:/opt/app/node_modules
+            - /opt/app/node_modules
         restart: always
         entrypoint: npm run dev
         depends_on:

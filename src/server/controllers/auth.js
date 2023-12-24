@@ -1,7 +1,8 @@
 import { sign } from 'jsonwebtoken'
 import { addDays } from 'date-fns'
 import { compareSync } from 'bcrypt'
-import User from '@/server/models/user'
+import User from '@/server/models/user.model'
+import omit from 'lodash/omit'
 
 export const signIn = async (req, res) => {
     try {
@@ -26,7 +27,7 @@ export const signIn = async (req, res) => {
         return res.json({
             token,
             exp,
-            user
+            user: omit(user.toObject(), 'password')
         })
     } catch (error) {
         console.error(error.message)
