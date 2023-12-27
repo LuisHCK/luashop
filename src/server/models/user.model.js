@@ -37,6 +37,11 @@ const userSchema = new mongoose.Schema(
             enum: {
                 values: ['active', 'disabled']
             }
+        },
+        organization: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: 'Organization',
+            default: null
         }
     },
     { timestamps: true }

@@ -1,6 +1,6 @@
 import omit from 'lodash/omit'
 import Organization from '../models/organization.model'
-
+import User from '../models/user.model'
 
 export const index = async (req, res) => {
     try {
@@ -14,11 +14,12 @@ export const index = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { auth, body } = req
-        const userOrgs = await Organization.find({ owner: auth._id }).countDocuments()
+        const { currentUser, body } = req
 
-        if (userOrgs < 1) {
-            const newOrg = await Organization.create({ ...body, owner: auth._id })
+        if (!currentUser.organization) {
+            const newOrg = await Organization.create({ ...body, owner: currentUser._id })
+            await User.findByIdAndUpdate(currentUser._id, { $set: { organization: newOrg._id } })
+
             return res.json(newOrg.toObject())
         }
 

@@ -3,6 +3,8 @@ import { expressjwt } from 'express-jwt'
 import { connect } from './database'
 import auth from './router/auth'
 import apiRouter from './router'
+import organizationMiddleware from './middlewares/organization.middleware'
+import currentUserMiddleware from './middlewares/currentUser.middleware'
 
 export const app = express()
 app.use(express.json())
@@ -10,8 +12,13 @@ app.use(express.json())
 // Auth should be before auth middleware
 app.use('/api/auth', auth)
 
-// Auth middleware
-app.use('/api/', expressjwt({ secret: process.env.JWT_SECRET, algorithms: ['HS256'] }))
+// Api middlewares
+app.use(
+    '/api/',
+    expressjwt({ secret: process.env.JWT_SECRET, algorithms: ['HS256'] }),
+    organizationMiddleware,
+    currentUserMiddleware
+)
 
 // Register api router
 apiRouter(app)
