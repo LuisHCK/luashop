@@ -12,24 +12,19 @@ const inventorySchema = new Schema(
         organization: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
         products: [
             {
-                type: Schema.Types.ObjectId,
-                ref: 'InventoryProduct'
+                product: {
+                    type: Schema.Types.ObjectId,
+                    ref: 'InventoryProduct',
+                    required: true
+                },
+                price: { type: Number, required: true, default: 0 },
+                stock: { type: Number, required: true },
+                minimum: Number,
+                lot: String
             }
         ]
     },
     { timestamps: true }
 )
 
-const inventoryProductSchema = new Schema(
-    {
-        product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-        price: { type: Number, required: true, default: 0 },
-        stock: { type: Number, required: true },
-        minimum: Number,
-        lot: String
-    },
-    { timestamps: true }
-)
-
-export const InventoryProductModel = models.InventoryProduct || model('InventoryProduct', inventoryProductSchema)
 export const InventoryModel = models.Inventory || model('Inventory', inventorySchema)

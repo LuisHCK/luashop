@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { create, index, update } from '../controllers/products.controller'
+import { create, index, update, remove } from '../controllers/products.controller'
 
 const router = Router()
 
@@ -7,5 +7,6 @@ const router = Router()
 router.get('/', index)
 router.post('/', create)
 router.patch('/', update)
+router.patch('/', remove)
 
 export default router

@@ -1,4 +1,3 @@
-import OrganizationModel from '../models/organization.model'
 import ProductModel from '../models/product.model'
 
 export const index = async (req, res) => {
@@ -36,5 +35,21 @@ export const update = async (req, res) => {
     } catch (error) {
         console.error(error)
         res.status(422).json({ message: error.message })
+    }
+}
+
+export const remove = async (req, res) => {
+    try {
+        const { currentUser, body } = req
+
+        await ProductModel.findOneAndDelete({
+            _id: body._id,
+            $and: { organization: currentUser.organization }
+        })
+
+        res.json({ message: 'Product deleted' })
+    } catch (error) {
+        console.error(error)
+        res.status(422).json({ message: `Can not delete the product}` })
     }
 }
