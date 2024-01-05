@@ -1,6 +1,6 @@
-import { Schema, model, models } from 'mongoose'
+import mongoose from 'mongoose'
 
-const inventorySchema = new Schema(
+const inventorySchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -9,22 +9,40 @@ const inventorySchema = new Schema(
         },
         description: { type: String, default: '' },
         location: { type: String, default: '' },
-        organization: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
-        products: [
-            {
-                product: {
-                    type: Schema.Types.ObjectId,
-                    ref: 'InventoryProduct',
-                    required: true
-                },
-                price: { type: Number, required: true, default: 0 },
-                stock: { type: Number, required: true },
-                minimum: Number,
-                lot: String
-            }
-        ]
+        organization: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Organization',
+            required: true,
+            index: true
+        }
     },
-    { timestamps: true }
+    { timestamps: true, toJSON: { virtuals: true } }
 )
 
-export const InventoryModel = models.Inventory || model('Inventory', inventorySchema)
+const inventoryProductSchema = new mongoose.Schema({
+    product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true
+    },
+    inventory: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Inventory',
+        required: true
+    },
+    price: { type: Number },
+    stock: { type: Number },
+    minimum: Number,
+    lot: String
+})
+
+inventoryProductSchema.index(
+    { product: 1, inventory: 1 },
+    { name: 'inventoryProduct', unique: true }
+)
+
+export const InventoryProductModel =
+    mongoose.models.InventoryProduct || mongoose.model('InventoryProduct', inventoryProductSchema)
+
+export const InventoryModel =
+    mongoose.models.Inventory || mongoose.model('Inventory', inventorySchema)

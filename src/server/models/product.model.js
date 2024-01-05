@@ -1,18 +1,23 @@
-import { Schema, model, models } from 'mongoose'
+import mongoose from 'mongoose'
 
-const productSchema = new Schema(
+const productSchema = new mongoose.Schema(
     {
         name: { type: String, required: true },
         description: { type: String, required: true },
-        brand: String,
-        codebar: { type: String, unique: true },
-        categories: [String],
-        unit: String,
-        photo: String,
-        createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-        organization: { type: Schema.Types.ObjectId, ref: 'Organization', required: true }
+        brand: { type: String, default: null },
+        codebar: { type: String, unique: true, index: true },
+        categories: { type: Array, default: [], index: true },
+        unit: { type: String, default: null },
+        photo: { type: String, default: null },
+        createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+        organization: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization', required: true }
     },
     { timestamps: true }
 )
 
-export default models.Product || model('Product', productSchema)
+productSchema.index(
+    { name: 'text', description: 'text', brand: 'text' },
+    { name: 'text', sparse: true }
+)
+
+export default mongoose.models.Product || mongoose.model('Product', productSchema)

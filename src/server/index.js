@@ -23,14 +23,10 @@ app.use(
 // Register api router
 apiRouter(app)
 
-app.get('*', (_req, res) => {
-    res.status(404).json({ message: '404 not found' })
-})
-
 if (!process.env['VITE']) {
     const frontendFiles = process.cwd() + '/dist'
     app.use(express.static(frontendFiles))
-    app.get('/*', (_, res) => {
+    app.get('/app/*', (_, res) => {
         res.send(frontendFiles + '/index.html')
     })
     app.listen(process.env['PORT'])

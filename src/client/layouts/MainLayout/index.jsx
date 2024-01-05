@@ -1,13 +1,32 @@
 import React, { useContext } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, Link } from 'react-router-dom'
 import { AppContext } from '@/client/context'
+import { useEffect } from 'react'
 
 const MainLayout = () => {
-    const { logOut } = useContext(AppContext)
+    const { logOut, currentUser } = useContext(AppContext)
+
+    useEffect(() => {
+        if (currentUser && !currentUser.organization) {
+            alert(
+                'Your user does not have an organization\nPlease create an organization to continue'
+            )
+        }
+    }, [currentUser])
+
     return (
         <div>
             <div>
-                <h2>Main Layout</h2>
+                <nav>
+                    <ul>
+                        <li>
+                            <Link to="/">Home</Link>
+                        </li>
+                        <li>
+                            <Link to="/product-catalog">Product Catalog</Link>
+                        </li>
+                    </ul>
+                </nav>
                 <button onClick={logOut}>logout</button>
             </div>
             <Outlet />

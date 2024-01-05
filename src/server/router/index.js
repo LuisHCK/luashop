@@ -1,4 +1,3 @@
-import { Application } from 'express'
 import organizations from './organizations.router'
 import sandbox from './sandbox.router'
 import inventories from './inventories.router'

@@ -1,4 +1,4 @@
-import { sign } from 'jsonwebtoken'
+import jsonwebtoken from 'jsonwebtoken'
 import { addDays } from 'date-fns'
 import { compareSync } from 'bcrypt'
 import User from '@/server/models/user.model'
@@ -36,7 +36,7 @@ export const signIn = async (req, res) => {
 }
 
 const signJWToken = (user) => {
-    return sign(
+    return jsonwebtoken.sign(
         {
             _id: user._id,
             role: user.role,

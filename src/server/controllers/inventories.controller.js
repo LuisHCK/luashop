@@ -1,11 +1,11 @@
-import { InventoryModel } from '@/server/models/inventory.model'
-import OrganizationModel from '@/server/models/organization.model'
+import { InventoryModel, InventoryProductModel } from '@/server/models/inventory.model'
 
 export const index = async (req, res) => {
     try {
-        const { auth } = req
-        const userOrg = await OrganizationModel.find({ owner: auth._id }).select('id')
-        const inventories = await InventoryModel.find({ organization: userOrg[0]._id })
+        const { currentUser } = req
+        const inventories = await InventoryModel.find({
+            organization: currentUser.organization._id
+        })
 
         res.json(inventories)
         // const inventories = await InventoryModel.find()
@@ -17,9 +17,11 @@ export const index = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { auth, body } = req
-        const userOrg = await OrganizationModel.find({ owner: auth._id }).select('id')
-        const newInventory = await InventoryModel.create({ ...body, organization: userOrg[0]._id })
+        const { currentUser, body } = req
+        const newInventory = await InventoryModel.create({
+            ...body,
+            organization: currentUser.organization
+        })
 
         if (newInventory) {
             return res.json(newInventory)
@@ -34,11 +36,10 @@ export const create = async (req, res) => {
 
 export const update = async (req, res) => {
     try {
-        const { auth, body } = req
-        const userOrg = await OrganizationModel.find({ owner: auth._id }).select('id')
+        const { currentUser, body } = req
 
         const updatedInventory = await InventoryModel.findOneAndUpdate(
-            { _id: body._id, $and: [{ organization: userOrg[0]._id }] },
+            { _id: body._id, $and: [{ organization: currentUser.organization }] },
             { $set: body },
             { new: true }
         )
@@ -56,18 +57,19 @@ export const update = async (req, res) => {
 
 export const show = async (req, res) => {
     try {
-        const { auth, params } = req
-
-
-        const userOrg = await OrganizationModel.find({ owner: auth._id }).select('id')
+        const { currentUser, params } = req
 
         const inventory = await InventoryModel.findOne({
-            _id: params.id,
-            $and: [{ organization: userOrg[0]._id }]
-        })
+            organization: currentUser.organization,
+            _id: params.id
+        }).lean(true)
+
+        const products = await InventoryProductModel.find({
+            inventory: inventory
+        }).populate('product')
 
         if (inventory) {
-            return res.json(inventory)
+            return res.json({ ...inventory, products })
         } else {
             throw new Error('Inventory not found')
         }
@@ -79,22 +81,102 @@ export const show = async (req, res) => {
 
 export const remove = async (req, res) => {
     try {
-        const { auth, query } = req
+        const { currentUser, query } = req
 
         if (!query.confirmed) {
             return res.status(422).json({ message: 'You should confirm the deletion' })
         }
 
-        const userOrg = await OrganizationModel.find({ owner: auth._id }).select('id')
-
         await InventoryModel.findOneAndDelete({
             _id: body._id,
-            $and: [{ organization: userOrg[0]._id }]
+            $and: [{ organization: currentUser.organization }]
         })
 
         res.status(200)
     } catch (error) {
         console.error(error)
         res.status(422).json({ message: error.message })
+    }
+}
+
+export const addProduct = async (req, res) => {
+    try {
+        const { currentUser, params, body } = req
+
+        const inventoryProductExists = await InventoryProductModel.findOne({
+            inventory: params.id,
+            product: body.product
+        })
+
+        if (inventoryProductExists) {
+            return res.status(422).json({ message: `Product is already added to the inventory` })
+        }
+
+        const newInventoryProduct = await InventoryProductModel.create({
+            ...body,
+            inventory: params.id,
+            product: body.product
+        })
+
+        // const updatedInventory = await InventoryModel.findOneAndUpdate(
+        //     { _id: params.id, organization: currentUser.organization },
+        //     { $addToSet: { products: body } },
+        //     { new: true }
+        // )
+
+        res.json(newInventoryProduct)
+    } catch (error) {
+        console.error(error)
+        res.status(422).json({ message: `Can't add product to inventory` })
+    }
+}
+
+export const removeProduct = async (req, res) => {
+    try {
+        const { currentUser, params } = req
+
+        const updatedInventory = await InventoryModel.findOneAndUpdate(
+            {
+                _id: params.id,
+                organization: currentUser.organization,
+                'products._id': params.inventoryProductId
+            },
+            { $pull: { products: { _id: params.inventoryProductId } } },
+            { safe: true, multi: false, new: true }
+        )
+
+        if (!updatedInventory) {
+            return res.status(404).json({ message: 'Relation does not exist' })
+        }
+
+        res.json(updatedInventory)
+    } catch (error) {
+        console.error(error)
+        res.status(422).json({ message: `Can't update inventory-product` })
+    }
+}
+
+export const updateProduct = async (req, res) => {
+    try {
+        const { params, body } = req
+
+        const fieldsToUpdate = Object.keys(body).reduce((acc, current) => {
+            acc[`products.$.${current}`] = body[current]
+            return acc
+        }, {})
+
+        const updatedInventoryProduct = await InventoryProductModel.findOneAndUpdate(
+            {
+                inventory: params._id,
+                product: body.product
+            },
+            { $set: fieldsToUpdate },
+            { safe: true, multi: false, new: true }
+        )
+
+        res.json(updatedInventoryProduct)
+    } catch (error) {
+        console.error(error)
+        res.status(422).json({ message: `Can't update inventory-product` })
     }
 }

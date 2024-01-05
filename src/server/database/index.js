@@ -30,8 +30,7 @@ export async function connect() {
 
     if (!cached.promise) {
         const opts = {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
+            // Add more later
         }
 
         cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
