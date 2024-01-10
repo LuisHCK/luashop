@@ -19,7 +19,7 @@ router.post('/', create)
 router.patch('/', update)
 router.delete('/', remove)
 router.post('/:id/products', addProduct)
-router.patch('/:id/products/:inventoryProductId', updateProduct)
-router.delete('/:id/products/:inventoryProductId', removeProduct)
+router.patch('/:id/products', updateProduct)
+router.delete('/:id/products', removeProduct)
 
 export default router

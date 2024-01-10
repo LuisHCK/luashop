@@ -5,6 +5,7 @@ import auth from './router/auth'
 import apiRouter from './router'
 import organizationMiddleware from './middlewares/organization.middleware'
 import currentUserMiddleware from './middlewares/currentUser.middleware'
+import seeds from './database/seeds'
 
 export const app = express()
 app.use(express.json())
@@ -33,3 +34,4 @@ if (!process.env['VITE']) {
 }
 
 connect()
+seeds()

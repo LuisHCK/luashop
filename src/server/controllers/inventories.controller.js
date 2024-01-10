@@ -101,7 +101,7 @@ export const remove = async (req, res) => {
 
 export const addProduct = async (req, res) => {
     try {
-        const { currentUser, params, body } = req
+        const { params, body } = req
 
         const inventoryProductExists = await InventoryProductModel.findOne({
             inventory: params.id,
@@ -118,12 +118,6 @@ export const addProduct = async (req, res) => {
             product: body.product
         })
 
-        // const updatedInventory = await InventoryModel.findOneAndUpdate(
-        //     { _id: params.id, organization: currentUser.organization },
-        //     { $addToSet: { products: body } },
-        //     { new: true }
-        // )
-
         res.json(newInventoryProduct)
     } catch (error) {
         console.error(error)
@@ -133,23 +127,19 @@ export const addProduct = async (req, res) => {
 
 export const removeProduct = async (req, res) => {
     try {
-        const { currentUser, params } = req
+        const { params, body, currentUser } = req
 
-        const updatedInventory = await InventoryModel.findOneAndUpdate(
-            {
-                _id: params.id,
-                organization: currentUser.organization,
-                'products._id': params.inventoryProductId
-            },
-            { $pull: { products: { _id: params.inventoryProductId } } },
-            { safe: true, multi: false, new: true }
-        )
+        const inventory = await InventoryModel.findOne({
+            _id: params.id,
+            company: currentUser.company
+        })
 
-        if (!updatedInventory) {
-            return res.status(404).json({ message: 'Relation does not exist' })
-        }
+        await InventoryProductModel.findOneAndDelete({
+            inventory: inventory._id,
+            product: body.product
+        })
 
-        res.json(updatedInventory)
+        res.json({ message: 'Removed product from inventory' })
     } catch (error) {
         console.error(error)
         res.status(422).json({ message: `Can't update inventory-product` })
@@ -158,19 +148,19 @@ export const removeProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     try {
-        const { params, body } = req
+        const { params, body, currentUser } = req
 
-        const fieldsToUpdate = Object.keys(body).reduce((acc, current) => {
-            acc[`products.$.${current}`] = body[current]
-            return acc
-        }, {})
+        const inventory = await InventoryModel.findOne({
+            _id: params.id,
+            company: currentUser.company
+        })
 
         const updatedInventoryProduct = await InventoryProductModel.findOneAndUpdate(
             {
-                inventory: params._id,
+                inventory: inventory._id,
                 product: body.product
             },
-            { $set: fieldsToUpdate },
+            { $set: body },
             { safe: true, multi: false, new: true }
         )
 

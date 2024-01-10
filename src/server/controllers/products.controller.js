@@ -1,4 +1,4 @@
-import { InventoryModel } from '../models/inventory.model'
+import { InventoryModel, InventoryProductModel } from '../models/inventory.model'
 import ProductModel from '../models/product.model'
 
 export const index = async (req, res) => {
@@ -66,22 +66,62 @@ export const search = async (req, res) => {
     const { currentUser } = req
 
     try {
+        if (!searchParam) {
+            return res.status(422).json({ message: 'Search param should not be empty' })
+        }
+
         const results = await ProductModel.find({
             $and: [{ $text: { $search: searchParam } }, { organization: currentUser.organization }]
         }).lean()
 
-        results.map(async (result) => {
-            const inventory = await InventoryModel.findOne({
-                // organization: currentUser.organization,
-                'products.product': result._id.toString()
+        const enrichedResults = await Promise.all(
+            results.map(async (result) => {
+                return await enrichProductData(result)
             })
+        )
 
-            console.log(inventory)
-        })
-
-        res.json(results)
+        res.json(enrichedResults)
     } catch (error) {
         console.error(error)
         res.status(404).json({ message: 'No results found' })
+    }
+}
+
+export const getByCodebar = async (req, res) => {
+    try {
+        const {
+            currentUser,
+            query: { codebar }
+        } = req
+
+        const product = await ProductModel.findOne({
+            organization: currentUser.organization,
+            codebar
+        }).lean()
+
+        if (product) {
+            const enrichedProduct = await enrichProductData(product)
+            return res.json(enrichedProduct)
+        }
+
+        res.status(404).json({ message: `Product with codebar: '${codebar}' does not exists` })
+    } catch (error) {
+        console.error(error)
+        res.status(402).json({ message: 'Product not found' })
+    }
+}
+
+const enrichProductData = async (product) => {
+    if (product.constructor.name === 'model') {
+        throw new TypeError('Product instance should not be hydratated. Please use the lean option')
+    }
+
+    const inventories = await InventoryProductModel.find({ product: product._id })
+        .populate('inventory')
+        .lean()
+
+    return {
+        ...product,
+        inventories
     }
 }
