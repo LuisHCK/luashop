@@ -13,11 +13,10 @@ export const AppContext = createContext(intialState)
 export const AppContextProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(storedUser ? JSON.parse(storedUser) : undefined)
 
-    const logOut = () => {
+    const logOut = (callback) => {
         Cookies.remove('token')
         localStorage.removeItem('currentUser')
         setCurrentUser(null)
-        window.location.replace('/login')
     }
 
     return (

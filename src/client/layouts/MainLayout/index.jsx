@@ -2,9 +2,10 @@ import React, { useContext } from 'react'
 import { Outlet, Link } from 'react-router-dom'
 import { AppContext } from '@/client/context'
 import { useEffect } from 'react'
+import Navigation from '../Navigation'
 
 const MainLayout = () => {
-    const { logOut, currentUser } = useContext(AppContext)
+    const { currentUser } = useContext(AppContext)
 
     useEffect(() => {
         if (currentUser && !currentUser.organization) {
@@ -16,20 +17,10 @@ const MainLayout = () => {
 
     return (
         <div>
-            <div>
-                <nav>
-                    <ul>
-                        <li>
-                            <Link to="/">Home</Link>
-                        </li>
-                        <li>
-                            <Link to="/product-catalog">Product Catalog</Link>
-                        </li>
-                    </ul>
-                </nav>
-                <button onClick={logOut}>logout</button>
-            </div>
-            <Outlet />
+            <Navigation />
+            <main className="container mt-4">
+                <Outlet />
+            </main>
         </div>
     )
 }

@@ -13,7 +13,8 @@ const fetcher = async (path, opts = {}) => {
         })
 
         if (!response.ok) {
-            throw new Error(`Request failed: ${response.statusText}`)
+            const body = await response.json()
+            throw new Error(body.message)
         }
 
         return response.json()

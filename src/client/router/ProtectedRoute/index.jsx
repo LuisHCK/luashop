@@ -7,7 +7,7 @@ const ProtectedRoute = () => {
     const { currentUser } = useContext(AppContext)
 
     if (!currentUser?._id) {
-        return <Navigate to="/login" />
+        return <Navigate to="/app/login" />
     }
 
     return <MainLayout />
