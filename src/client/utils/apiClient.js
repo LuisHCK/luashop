@@ -1,10 +1,11 @@
 import Cookies from 'js-cookie'
-import { getCookie } from './cookies'
+import isEmpty from 'lodash/isEmpty'
 
 const fetcher = async (path, opts = {}) => {
     try {
         const token = Cookies.get('token')
         const response = await fetch(path, {
+            method: 'GET',
             headers: {
                 Authorization: token ? `Bearer ${token}` : '',
                 'Content-Type': 'application/json'
@@ -49,7 +50,7 @@ const api = {
 }
 
 const buildQueryString = (params) => {
-    if (params) {
+    if (!isEmpty(params)) {
         const query = Object.keys(params)
             .map((key) => key + '=' + params[key])
             .join('&')
