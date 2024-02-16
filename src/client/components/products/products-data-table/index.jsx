@@ -1,9 +1,18 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import DataTable from '@/client/components/data-table'
 import { parseISO, format } from 'date-fns'
 import { IconPencil } from '@tabler/icons-react'
+import { ProductContext } from '@/client/context/product-context'
 
-const ProductsDataTable = ({ products, isLoading }) => {
+const ProductsDataTable = ({ products, pagination, onPageChange, onSearch }) => {
+    const { setSelectedProduct, setModalIsOpen, setProductForm } = useContext(ProductContext)
+
+    const openEditModal = (product) => {
+        setSelectedProduct(product)
+        setModalIsOpen(true)
+        setProductForm(product)
+    }
+
     const columns = [
         { name: 'Photo', render: (row) => <img width={64} height={64} src={row.photo} /> },
         { name: 'Name', render: 'name' },
@@ -26,8 +35,8 @@ const ProductsDataTable = ({ products, isLoading }) => {
         },
         {
             name: 'Actions',
-            render: () => (
-                <button className="button is-small is-rounded is-secondary">
+            render: (row) => (
+                <button onClick={() => openEditModal(row)} className="button is-small is-rounded is-secondary">
                     <span className="icon">
                         <IconPencil />
                     </span>
@@ -36,7 +45,15 @@ const ProductsDataTable = ({ products, isLoading }) => {
             )
         }
     ]
-    return <DataTable rows={products} columns={columns} />
+    return (
+        <DataTable
+            rows={products}
+            columns={columns}
+            pagination={pagination}
+            onPageChange={onPageChange}
+            onSearch={onSearch}
+        />
+    )
 }
 
 ProductsDataTable

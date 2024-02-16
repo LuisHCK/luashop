@@ -21,6 +21,15 @@ app.use(
     currentUserMiddleware
 )
 
+// JWT unauthorized access error handling
+app.use((err, _req, res, next) => {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).json({message: "Unauthorized"})
+    } else {
+        next(err)
+    }
+})
+
 // Register api router
 apiRouter(app)
 

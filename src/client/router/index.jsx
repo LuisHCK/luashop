@@ -1,10 +1,13 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { ProductContextProvider } from '@/client/context/product-context'
 // Import pages
 import LoginPage from '@/client/pages/Login'
 import DashboardPage from '@/client/pages/Dashboard'
 import AboutPage from '@/client/pages/About'
 import ProtectedRoute from './ProtectedRoute'
 import ProductCatalog from '@/client/pages/ProductCatalog'
+import Inventories from '@/client/pages/Inventories'
+
 const Router = () => {
     /** @type {import('react-router-dom').RouteObject} */
     const publicRoutes = [
@@ -30,7 +33,15 @@ const Router = () => {
                 },
                 {
                     path: 'product-catalog',
-                    element: <ProductCatalog />
+                    element: (
+                        <ProductContextProvider>
+                            <ProductCatalog />
+                        </ProductContextProvider>
+                    )
+                },
+                {
+                    path: 'inventories',
+                    element: <Inventories />
                 }
             ]
         }

@@ -9,6 +9,21 @@ const Navigation = () => {
         logOut()
     }
 
+    const navLinks = [
+        {
+            label: 'Home',
+            to: '/app'
+        },
+        {
+            label: 'Products',
+            to: '/app/product-catalog'
+        },
+        {
+            label: 'Inventories',
+            to: '/app/inventories'
+        }
+    ]
+
     return (
         <nav className="navbar is-primary">
             <div className="navbar-brand">
@@ -29,12 +44,11 @@ const Navigation = () => {
 
             <div id="appNavbar" className="navbar-menu">
                 <div className="navbar-start">
-                    <Link className="navbar-item" to="/app">
-                        Home
-                    </Link>
-                    <Link className="navbar-item" to="/app/product-catalog">
-                        Products
-                    </Link>
+                    {navLinks.map((link) => (
+                        <Link key={`nav-link-${link.to}`} className="navbar-item" to={link.to}>
+                            {link.label}
+                        </Link>
+                    ))}
                 </div>
 
                 <div className="navbar-end">

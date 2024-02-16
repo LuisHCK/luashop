@@ -1,6 +1,13 @@
 import Cookies from 'js-cookie'
 import isEmpty from 'lodash/isEmpty'
+import { deleteCookie } from './cookies'
 
+/**
+ * 
+ * @param {String} path URL path
+ * @param {Object} opts Request payload
+ * @returns 
+ */
 const fetcher = async (path, opts = {}) => {
     try {
         const token = Cookies.get('token')
@@ -15,6 +22,12 @@ const fetcher = async (path, opts = {}) => {
 
         if (!response.ok) {
             const body = await response.json()
+
+            if (response.status === 401) {
+                deleteCookie('token')
+                window?.location.replace('/app/login')
+            }
+
             throw new Error(body.message)
         }
 
@@ -27,7 +40,8 @@ const fetcher = async (path, opts = {}) => {
 const api = {
     get: async (path, params) => {
         try {
-            return await fetcher(`${path}${buildQueryString(params)}`)
+            const cleanedParams = cleanParams(params)
+            return await fetcher(`${path}${buildQueryString(cleanedParams)}`)
         } catch (error) {
             console.error(error)
             return null
@@ -59,6 +73,16 @@ const buildQueryString = (params) => {
     }
 
     return ''
+}
+
+const cleanParams = (params = {}) => {
+    const result = {}
+    Object.keys(params).forEach((key) => {
+        if (!!params[key]) {
+            result[key] = params[key]
+        }
+    })
+    return result
 }
 
 export default api

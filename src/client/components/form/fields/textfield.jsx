@@ -11,6 +11,7 @@ const TextField = ({
     iconRight,
     inputClassName,
     id,
+    name,
     type,
     ...rest
 }) => {
@@ -31,35 +32,39 @@ const TextField = ({
         }
     }, [type])
 
+    const passwordTogle = useMemo(() => {
+        return (
+            type === formFields.PASSWORD && (
+                <div className="control">
+                    <button type="button" className="button is-rounded" onClick={togglePassword}>
+                        {showPassword ? (
+                            <IconEyeClosed color="hsl(0, 0%, 29%)" />
+                        ) : (
+                            <IconEye color="hsl(0, 0%, 29%)" />
+                        )}
+                    </button>
+                </div>
+            )
+        )
+    }, [type, showPassword, formFields])
+
     return (
         <div className={classNames('field', className)}>
-            <label htmlFor={id} className="label">
+            <label htmlFor={id || name} className="label">
                 {label}
             </label>
             <div className="field has-addons" style={{ width: '100%!' }}>
                 <div className={classNames('control', 'is-expanded', 'has-icons-left')}>
                     <input
+                        id={id || name}
+                        name={name}
                         className={classNames('input', 'is-rounded', inputClassName)}
                         type={showPassword ? 'text' : type}
                         {...rest}
                     />
                     <span className="icon is-small is-left">{leftIcon}</span>
                 </div>
-                {type === formFields.PASSWORD && (
-                    <div className="control">
-                        <button
-                            type="button"
-                            className="button is-rounded"
-                            onClick={togglePassword}
-                        >
-                            {showPassword ? (
-                                <IconEyeClosed color="hsl(0, 0%, 29%)" />
-                            ) : (
-                                <IconEye color="hsl(0, 0%, 29%)" />
-                            )}
-                        </button>
-                    </div>
-                )}
+                {passwordTogle}
             </div>
         </div>
     )

@@ -3,7 +3,29 @@ import ProductModel from '../models/product.model'
 
 export const index = async (req, res) => {
     try {
-        const products = await ProductModel.find({ organization: req.currentUser.organization })
+        const { page, limit, searchTerm } = req.query
+
+        const options = {
+            page: page || 1,
+            limit: limit || 10,
+            collation: {
+                locale: 'en',
+            },
+            sort: {
+                createdAt: 1
+            }
+        };
+
+        const query = {
+            organization: req.currentUser.organization
+        }
+
+        if (searchTerm?.length) {
+            query.$and = [{ $text: { $search: searchTerm } }]
+            options.sort = { ...options.sort, name: -1 }
+        }
+
+        const products = await ProductModel.paginate(query, options)
 
         res.json(products)
     } catch (error) {

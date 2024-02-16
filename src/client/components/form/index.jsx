@@ -5,7 +5,7 @@ import formFields from '@/client/lib/formFields'
 import TextField from './fields/textfield'
 import Textarea from './fields/textarea'
 
-const Form = ({ title, groups, errorMessage, isLoading, onSubmit }) => {
+const Form = ({ title, groups, errorMessage, isLoading, onSubmit, hideSubmitButton }) => {
     const handleSubmit = (event) => {
         event.preventDefault()
 
@@ -39,21 +39,27 @@ const Form = ({ title, groups, errorMessage, isLoading, onSubmit }) => {
     }, [errorMessage])
 
     return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <h3 className="is-size-3 mb-5">{title}</h3>
-                {groups.map((group) => (
-                    <div key={`form-group-${group.name}`} className="columns">
-                        {group.fields.map((field) => (
-                            <div key={`form-field-${field.name}`} className="column">
-                                {renderInputField(field)}
-                            </div>
-                        ))}
-                    </div>
-                ))}
+        <form onSubmit={handleSubmit}>
+            {title && <h3 className="is-size-3 mb-5">{title}</h3>}
+            {groups.map((group) => (
+                <div
+                    key={`form-group-${group.name}`}
+                    className="columns is-variable is-2 is-mobile is-multiline"
+                >
+                    {group.fields.map((field) => (
+                        <div
+                            key={`form-field-${field.name}`}
+                            className={classNames('column', field.className)}
+                        >
+                            {renderInputField(field)}
+                        </div>
+                    ))}
+                </div>
+            ))}
 
-                {errorMessages}
+            {errorMessages}
 
+            {!hideSubmitButton && (
                 <div className="field">
                     <div className="control">
                         <button
@@ -66,8 +72,8 @@ const Form = ({ title, groups, errorMessage, isLoading, onSubmit }) => {
                         </button>
                     </div>
                 </div>
-            </form>
-        </div>
+            )}
+        </form>
     )
 }
 
@@ -91,9 +97,10 @@ Form.propTypes = {
             className: PropTypes.string
         })
     ),
-    onSubmit: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func,
     errors: PropTypes.string,
-    isLoading: PropTypes.bool
+    isLoading: PropTypes.bool,
+    hideSubmitButton: PropTypes.bool
 }
 
 export default Form

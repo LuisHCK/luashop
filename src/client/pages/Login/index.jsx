@@ -30,7 +30,6 @@ const LoginPage = () => {
 
             return goHome()
         } else {
-            console.log(res)
             setErrorMessage('Email or password invalid')
         }
 

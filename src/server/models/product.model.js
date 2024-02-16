@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const productSchema = new mongoose.Schema(
     {
@@ -19,5 +20,7 @@ productSchema.index(
     { name: 'text', description: 'text', brand: 'text' },
     { name: 'text', sparse: true }
 )
+
+productSchema.plugin(mongoosePaginate)
 
 export default mongoose.models.Product || mongoose.model('Product', productSchema)

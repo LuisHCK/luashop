@@ -1,3 +1,4 @@
 export default {
-    PRODUCTS: '/api/products/'
+    PRODUCTS: '/api/products/',
+    INVENTORIES: '/api/inventories/',
 }

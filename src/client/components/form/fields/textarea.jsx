@@ -6,7 +6,7 @@ const Textarea = ({ label, className, inputClassName, ...rest }) => {
         <div className={classNames('field', className)}>
             <label className="label">{label}</label>
             <div className="control">
-                <textarea class={classNames('textarea', inputClassName)} {...rest} />
+                <textarea className={classNames('textarea', inputClassName)} {...rest} />
             </div>
         </div>
     )
