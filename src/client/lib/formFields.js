@@ -21,7 +21,8 @@ const formFields = {
     TEXTAREA: 'textarea',
     TIME: 'time',
     URL: 'url',
-    WEEK: 'week'
+    WEEK: 'week',
+    TAGS: 'tags'
 }
 
 export default formFields

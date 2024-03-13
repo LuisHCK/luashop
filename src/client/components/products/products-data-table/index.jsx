@@ -5,21 +5,29 @@ import { IconPencil } from '@tabler/icons-react'
 import { ProductContext } from '@/client/context/product-context'
 
 const ProductsDataTable = ({ products, pagination, onPageChange, onSearch }) => {
-    const { setSelectedProduct, setModalIsOpen, setProductForm } = useContext(ProductContext)
+    const { setSelectedProduct, setModalIsOpen } = useContext(ProductContext)
 
     const openEditModal = (product) => {
         setSelectedProduct(product)
         setModalIsOpen(true)
-        setProductForm(product)
     }
 
     const columns = [
-        { name: 'Photo', render: (row) => <img width={64} height={64} src={row.photo} /> },
+        {
+            name: 'Photo',
+            render: (row) => (
+                <img width={64} height={64} src={row.photo || '/public/thumbnail.jpeg'} />
+            )
+        },
         { name: 'Name', render: 'name' },
-        { name: 'Codebar', render: 'codebar' },
         {
             name: 'Unit',
             render: (row) => <span className="tag is-info is-rounded is-light">{row.unit}</span>
+        },
+        { name: 'Brand', render: 'brand' },
+        {
+            name: 'Codebar',
+            render: (row) => <span className="tag is-link is-rounded is-light">{row.codebar}</span>
         },
         {
             name: 'Created at',
@@ -36,7 +44,10 @@ const ProductsDataTable = ({ products, pagination, onPageChange, onSearch }) => 
         {
             name: 'Actions',
             render: (row) => (
-                <button onClick={() => openEditModal(row)} className="button is-small is-rounded is-secondary">
+                <button
+                    onClick={() => openEditModal(row)}
+                    className="button is-small is-rounded is-secondary"
+                >
                     <span className="icon">
                         <IconPencil />
                     </span>

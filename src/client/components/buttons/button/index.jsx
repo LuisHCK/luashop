@@ -10,12 +10,13 @@ const Button = ({
     isPrimary,
     isSmall,
     type,
-    onClick
+    onClick,
+    ...rest
 }) => {
     return (
         <button
             className={classNames('button', {
-                'isLoading': isLoading,
+                'is-loading': isLoading,
                 'is-primary': isPrimary,
                 'is-secondary': isSecondary,
                 'is-small': isSmall,
@@ -23,6 +24,7 @@ const Button = ({
             })}
             type={type}
             onClick={onClick}
+            {...rest}
         >
             {children}
         </button>

@@ -1,0 +1,25 @@
+.tagsList {
+    display: flex;
+    justify-content: flex-start;
+    column-gap: 0.5rem;
+    row-gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.tagsInput {
+    border: none !important;
+    font-size: 1rem;
+    color: hsl(0, 0%, 21%);
+    margin-left: 1rem;
+
+    &:focus {
+        border: none;
+        outline: none;
+    }
+}
+
+.tagButton {
+    border: none;
+    cursor: pointer;
+}

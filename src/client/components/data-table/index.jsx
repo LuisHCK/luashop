@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import get from 'lodash/get'
 import snakeCase from 'lodash/snakeCase'
 import ReactPaginate from 'react-paginate'
-import SearchBar from '../searchbar'
+import SearchBar from '@/client/components/searchbar'
 
 const DataTable = ({ columns, rows, selectable, pagination, onPageChange, onSearch }) => {
     const renderCell = (render, row) => {

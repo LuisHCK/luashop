@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import { IconEye, IconEyeClosed, IconAt, IconAlignLeft, IconFingerprint } from '@tabler/icons-react'
@@ -6,6 +6,8 @@ import formFields from '@/client/lib/formFields'
 
 const TextField = ({
     label,
+    value,
+    onChange,
     className,
     iconLeft,
     iconRight,
@@ -16,6 +18,7 @@ const TextField = ({
     ...rest
 }) => {
     const [showPassword, setShowPassword] = useState(false)
+    const [currentValue, setCurrentValue] = useState(value || '')
 
     const togglePassword = () => setShowPassword((prev) => !prev)
 
@@ -31,6 +34,17 @@ const TextField = ({
                 return <IconAlignLeft />
         }
     }, [type])
+
+    const onChangeHandler = ({ currentTarget }) => {
+        setCurrentValue(currentTarget.value)
+
+        if (onChange) {
+            onChange({
+                name,
+                value: currentTarget.value
+            })
+        }
+    }
 
     const passwordTogle = useMemo(() => {
         return (
@@ -48,6 +62,10 @@ const TextField = ({
         )
     }, [type, showPassword, formFields])
 
+    useEffect(() => {
+        setCurrentValue(value)
+    }, [value])
+
     return (
         <div className={classNames('field', className)}>
             <label htmlFor={id || name} className="label">
@@ -60,6 +78,8 @@ const TextField = ({
                         name={name}
                         className={classNames('input', 'is-rounded', inputClassName)}
                         type={showPassword ? 'text' : type}
+                        value={currentValue}
+                        onChange={onChangeHandler}
                         {...rest}
                     />
                     <span className="icon is-small is-left">{leftIcon}</span>

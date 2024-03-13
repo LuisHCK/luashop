@@ -1,3 +1,5 @@
+@import 'bulma/sass/utilities/mixins.sass';
+
 .container {
     width: 100vw;
     height: 100vh;
@@ -10,13 +12,17 @@
     opacity: 0.8;
     background-image: radial-gradient(#444cf7 0.5px, #e5e5f7 0.5px);
     background-size: 10px 10px;
+
+    padding: 1rem;
 }
 
 .card {
     display: flex;
+    overflow: hidden;
 
     width: 100%;
     max-width: 960px;
+    border-radius: 6px;
 }
 
 .hero {
@@ -24,6 +30,10 @@
     background-position: center;
     background-size: cover;
     width: 100%;
+
+    @include mobile {
+        display: none;
+    }
 }
 
 .formContainer {

@@ -1,30 +1,52 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import formFields from '@/client/lib/formFields'
 import TextField from './fields/textfield'
 import Textarea from './fields/textarea'
+import TagsInput from './fields/tags-input'
+import { isEmpty } from 'lodash'
 
-const Form = ({ title, groups, errorMessage, isLoading, onSubmit, hideSubmitButton }) => {
+const Form = ({ title, fields, errorMessage, isLoading, hideSubmitButton, onChange, onSubmit }) => {
+    const [formData, setFormData] = useState({})
+
     const handleSubmit = (event) => {
         event.preventDefault()
-
-        if (isLoading) {
-            return
-        }
-
-        const formData = Object.fromEntries(new FormData(event.currentTarget))
-
         onSubmit?.(formData)
+    }
+
+    const onChangeHandler = ({ name, value }) => {
+        setFormData((prev) => ({ ...prev, [name]: value }))
     }
 
     const renderInputField = (field) => {
         switch (field.type) {
             case formFields.TEXTAREA:
-                return <Textarea disabled={isLoading} {...field} />
+                return (
+                    <Textarea
+                        onChange={(event) => onChangeHandler(event)}
+                        disabled={isLoading}
+                        {...field}
+                    />
+                )
+
+            case formFields.TAGS:
+                return (
+                    <TagsInput
+                        onChange={(event) => onChangeHandler(event)}
+                        disabled={isLoading}
+                        {...field}
+                    />
+                )
 
             default:
-                return <TextField disabled={isLoading} {...field} />
+                return (
+                    <TextField
+                        onChange={(event) => onChangeHandler(event)}
+                        disabled={isLoading}
+                        {...field}
+                    />
+                )
         }
     }
 
@@ -38,22 +60,33 @@ const Form = ({ title, groups, errorMessage, isLoading, onSubmit, hideSubmitButt
         }
     }, [errorMessage])
 
+    useEffect(() => {
+        if (fields) {
+            const data = fields.reduce((acc, curr) => {
+                acc[curr.name] = curr.value
+                return acc
+            }, {})
+
+            setFormData(data)
+        }
+    }, [fields])
+
+    useEffect(() => {
+        if (!isEmpty(formData)) {
+            onChange?.(formData)
+        }
+    }, [formData])
+
     return (
         <form onSubmit={handleSubmit}>
             {title && <h3 className="is-size-3 mb-5">{title}</h3>}
-            {groups.map((group) => (
+
+            {fields.map((field) => (
                 <div
-                    key={`form-group-${group.name}`}
-                    className="columns is-variable is-2 is-mobile is-multiline"
+                    key={`form-field-${field.name}`}
+                    className={classNames('column', field.className)}
                 >
-                    {group.fields.map((field) => (
-                        <div
-                            key={`form-field-${field.name}`}
-                            className={classNames('column', field.className)}
-                        >
-                            {renderInputField(field)}
-                        </div>
-                    ))}
+                    {renderInputField(field)}
                 </div>
             ))}
 
@@ -77,24 +110,17 @@ const Form = ({ title, groups, errorMessage, isLoading, onSubmit, hideSubmitButt
     )
 }
 
-const formField = PropTypes.shape({
-    label: PropTypes.string,
-    type: PropTypes.oneOf(Object.values(formFields)),
-    className: PropTypes.string,
-    placeholder: PropTypes.string,
-    value: PropTypes.string,
-    name: PropTypes.string,
-    id: PropTypes.string
-})
-
 Form.propTypes = {
     title: PropTypes.string,
-    groups: PropTypes.arrayOf(
+    fields: PropTypes.arrayOf(
         PropTypes.shape({
+            label: PropTypes.string,
+            type: PropTypes.oneOf(Object.values(formFields)),
+            className: PropTypes.string,
+            placeholder: PropTypes.string,
+            value: PropTypes.any,
             name: PropTypes.string,
-            header: PropTypes.string,
-            fields: PropTypes.arrayOf(formField),
-            className: PropTypes.string
+            id: PropTypes.string
         })
     ),
     onSubmit: PropTypes.func,

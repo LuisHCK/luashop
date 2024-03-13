@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import styles from './styles.module.scss'
-import api from '@/client/utils/apiClient'
+import api from '@/client/lib/apiClient'
 import Cookies from 'js-cookie'
 import { parseISO } from 'date-fns'
 import { useNavigate } from 'react-router-dom'
@@ -19,7 +19,13 @@ const LoginPage = () => {
         setLoading(true)
         setErrorMessage(undefined)
 
-        const res = await api.post('/api/auth/sign-in', formData)
+        const res = await api.post(
+            '/api/auth/sign-in',
+            formData,
+            (res) => {
+                console.log(res)
+            }
+        )
 
         if (res) {
             const expires = parseISO(res.exp)
@@ -49,7 +55,7 @@ const LoginPage = () => {
                 <div className={styles.formContainer}>
                     <Form
                         title="Login"
-                        groups={formGroups}
+                        fields={formFields}
                         onSubmit={submitHanlder}
                         errorMessage={errorMessage}
                         isLoading={loading}
@@ -60,32 +66,22 @@ const LoginPage = () => {
     )
 }
 
-const formGroups = [
+const formFields = [
     {
-        name: 'Login',
-        fields: [
-            {
-                name: 'email',
-                id: 'email',
-                type: 'email',
-                placeholder: 'Type your email or username',
-                required: true,
-                label: 'Email'
-            }
-        ]
+        name: 'email',
+        id: 'email',
+        type: 'email',
+        placeholder: 'Type your email or username',
+        required: true,
+        label: 'Email'
     },
     {
-        name: 'Password',
-        fields: [
-            {
-                name: 'password',
-                id: 'password',
-                type: 'password',
-                placeholder: 'Type your password',
-                required: true,
-                label: 'Password'
-            }
-        ]
+        name: 'password',
+        id: 'password',
+        type: 'password',
+        placeholder: 'Type your password',
+        required: true,
+        label: 'Password'
     }
 ]
 

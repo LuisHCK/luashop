@@ -1,12 +1,13 @@
 import Cookies from 'js-cookie'
 import isEmpty from 'lodash/isEmpty'
 import { deleteCookie } from './cookies'
+import routes from './backend/routes'
 
 /**
- * 
+ *
  * @param {String} path URL path
  * @param {Object} opts Request payload
- * @returns 
+ * @returns
  */
 const fetcher = async (path, opts = {}) => {
     try {
@@ -22,10 +23,11 @@ const fetcher = async (path, opts = {}) => {
 
         if (!response.ok) {
             const body = await response.json()
+            const isLoginPage = window.location.pathname.match(routes.LOGIN)
 
-            if (response.status === 401) {
+            if (response.status === 401 && !isLoginPage) {
                 deleteCookie('token')
-                window?.location.replace('/app/login')
+                window?.location.replace(routes.LOGIN)
             }
 
             throw new Error(body.message)
@@ -51,7 +53,7 @@ const api = {
         return fetcher(path, { method: 'POST', body: JSON.stringify(body) })
     },
     patch: async (path, body) => {
-        return await fetcher(path, { method: 'PATCH', body })
+        return await fetcher(path, { method: 'PATCH', body: JSON.stringify(body) })
     },
     delete: async (path) => {
         try {

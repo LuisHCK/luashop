@@ -1,24 +1,23 @@
-import React, { useContext, useMemo } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import get from 'lodash/get'
 import Form from '@/client/components/form'
 import { ProductContext } from '@/client/context/product-context'
+import fieldTypes from '@/client/lib/formFields'
 
 const ProductForm = () => {
-    const { productForm, setProductForm, selectedProduct } = useContext(ProductContext)
+    const { selectedProduct, setProductForm } = useContext(ProductContext)
 
     const fields = useMemo(
         () =>
             formFields.map((field) => ({
                 ...field,
-                defaultValue: get(selectedProduct, field.name, ''),
-                onChange: ({ target }) =>
-                    setProductForm((prev) => ({ ...prev, [field.name]: target.value }))
+                value: get(selectedProduct, field.name, '')
             })),
         [selectedProduct]
     )
 
-    return <Form groups={[{ fields }]} hideSubmitButton />
+    return <Form fields={fields} onChange={setProductForm} hideSubmitButton />
 }
 
 const formFields = [
@@ -27,13 +26,12 @@ const formFields = [
         name: 'description',
         label: 'Description',
         type: 'textarea',
-        className: 'is-full-desktop',
-        defaultValue: ''
+        className: 'is-full-desktop'
     },
     { name: 'brand', label: 'Brand', className: 'is-half-desktop' },
     { name: 'codebar', label: 'Codebar', className: 'is-half-desktop' },
     { name: 'unit', label: 'Unit', className: 'is-half-desktop' },
-    { name: 'categories', label: 'Categories', className: 'is-full-desktop' }
+    { name: 'categories', label: 'Categories', className: 'is-full-desktop', type: fieldTypes.TAGS }
 ]
 
 ProductForm.propTypes = {
