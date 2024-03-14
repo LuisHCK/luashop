@@ -15,7 +15,7 @@ const Form = ({ title, fields, errorMessage, isLoading, hideSubmitButton, onChan
         onSubmit?.(formData)
     }
 
-    const onChangeHandler = ({ name, value }) => {
+    const primaryonChangeHandler = ({ name, value }) => {
         setFormData((prev) => ({ ...prev, [name]: value }))
     }
 

@@ -2,7 +2,7 @@ import React, { Fragment, useContext, useMemo } from 'react'
 import isEmpty from 'lodash/isEmpty'
 import Modal from '@/client/components/modal'
 import ProductForm from '../product-form'
-import Button from '../../buttons/button'
+import Button from '../../bulma/buttons/button'
 import { ProductContext } from '@/client/context/product-context'
 
 const ProductModal = () => {

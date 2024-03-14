@@ -1,6 +1,6 @@
 import React from 'react'
 import DataTable from '@/client/components/data-table'
-import EditButton from '@/client/components/buttons/edit'
+import EditButton from '@/client/components/bulma/buttons/edit'
 import { longDate } from '@/client/lib/datetime'
 
 const InventoriesDataTable = ({ inventories, pagination, onPageChange, onSearch }) => {
