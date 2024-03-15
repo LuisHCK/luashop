@@ -15,6 +15,9 @@ const DataTable = ({ columns, rows, selectable, pagination, onPageChange, onSear
 
         return `unknown render: ${render}`
     }
+
+    const showPagination = pagination && pagination.totalPages > 1
+
     return (
         <table className="table is-striped is-hoverable is-fullwidth is-responsive">
             <thead>
@@ -50,27 +53,29 @@ const DataTable = ({ columns, rows, selectable, pagination, onPageChange, onSear
                     </tr>
                 ))}
             </tbody>
-            <tfoot>
-                <tr>
-                    <td colSpan={columns.length}>
-                        <ReactPaginate
-                            breakLabel="..."
-                            nextLabel="Next >"
-                            previousLabel="< Prev"
-                            pageCount={pagination.totalPages || 1}
-                            initialPage={pagination.page ? pagination.page - 1 : 0}
-                            marginPagesDisplayed={2}
-                            className="pagination is-centered is-rounded is-small is-justify-content-center"
-                            nextClassName="pagination-previous"
-                            previousClassName="pagination-previous"
-                            containerClassName="pagination-list"
-                            pageLinkClassName="pagination-link"
-                            activeLinkClassName="is-current"
-                            onPageChange={({ selected }) => onPageChange(selected + 1)}
-                        />
-                    </td>
-                </tr>
-            </tfoot>
+            {showPagination && (
+                <tfoot>
+                    <tr>
+                        <td colSpan={columns.length}>
+                            <ReactPaginate
+                                breakLabel="..."
+                                nextLabel="Next >"
+                                previousLabel="< Prev"
+                                pageCount={pagination.totalPages || 1}
+                                initialPage={pagination.page ? pagination.page - 1 : 0}
+                                marginPagesDisplayed={2}
+                                className="pagination is-centered is-rounded is-small is-justify-content-center"
+                                nextClassName="pagination-previous"
+                                previousClassName="pagination-previous"
+                                containerClassName="pagination-list"
+                                pageLinkClassName="pagination-link"
+                                activeLinkClassName="is-current"
+                                onPageChange={({ selected }) => onPageChange(selected + 1)}
+                            />
+                        </td>
+                    </tr>
+                </tfoot>
+            )}
         </table>
     )
 }
@@ -96,10 +101,7 @@ DataTable.defaultProps = {
     columns: [],
     rows: [],
     selectable: false,
-    pagination: {
-        totalPages: 1,
-        page: 1
-    },
+    pagination: null,
     onPageChange: (e) => e,
     onSearch: (e) => e
 }

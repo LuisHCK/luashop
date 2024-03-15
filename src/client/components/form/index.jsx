@@ -5,9 +5,19 @@ import formFields from '@/client/lib/formFields'
 import TextField from './fields/textfield'
 import Textarea from './fields/textarea'
 import TagsInput from './fields/tags-input'
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash/isEmpty'
+import get from 'lodash/get'
 
-const Form = ({ title, fields, errorMessage, isLoading, hideSubmitButton, onChange, onSubmit }) => {
+const Form = ({
+    title,
+    fields,
+    errorMessage,
+    isLoading,
+    hideSubmitButton,
+    onChange,
+    onSubmit,
+    data = null
+}) => {
     const [formData, setFormData] = useState({})
 
     const handleSubmit = (event) => {
@@ -15,17 +25,20 @@ const Form = ({ title, fields, errorMessage, isLoading, hideSubmitButton, onChan
         onSubmit?.(formData)
     }
 
-    const primaryonChangeHandler = ({ name, value }) => {
+    const onChangeHandler = ({ name, value }) => {
         setFormData((prev) => ({ ...prev, [name]: value }))
     }
 
     const renderInputField = (field) => {
+        const defaultValue = get(data, field.name, '')
+
         switch (field.type) {
             case formFields.TEXTAREA:
                 return (
                     <Textarea
                         onChange={(event) => onChangeHandler(event)}
                         disabled={isLoading}
+                        value={defaultValue}
                         {...field}
                     />
                 )
@@ -35,6 +48,7 @@ const Form = ({ title, fields, errorMessage, isLoading, hideSubmitButton, onChan
                     <TagsInput
                         onChange={(event) => onChangeHandler(event)}
                         disabled={isLoading}
+                        value={defaultValue}
                         {...field}
                     />
                 )
@@ -44,6 +58,7 @@ const Form = ({ title, fields, errorMessage, isLoading, hideSubmitButton, onChan
                     <TextField
                         onChange={(event) => onChangeHandler(event)}
                         disabled={isLoading}
+                        value={defaultValue}
                         {...field}
                     />
                 )
@@ -126,7 +141,8 @@ Form.propTypes = {
     onSubmit: PropTypes.func,
     errors: PropTypes.string,
     isLoading: PropTypes.bool,
-    hideSubmitButton: PropTypes.bool
+    hideSubmitButton: PropTypes.bool,
+    data: PropTypes.object
 }
 
 export default Form

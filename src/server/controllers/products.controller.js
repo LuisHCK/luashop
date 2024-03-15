@@ -9,12 +9,12 @@ export const index = async (req, res) => {
             page: page || 1,
             limit: limit || 10,
             collation: {
-                locale: 'en',
+                locale: 'en'
             },
             sort: {
                 createdAt: 1
             }
-        };
+        }
 
         const query = {
             organization: req.currentUser.organization
@@ -51,8 +51,6 @@ export const create = async (req, res) => {
 export const update = async (req, res) => {
     try {
         const { currentUser, params, body } = req
-
-        console.log(params)
 
         const newProduct = await ProductModel.findOneAndUpdate(
             { _id: params.id, organization: currentUser.organization },

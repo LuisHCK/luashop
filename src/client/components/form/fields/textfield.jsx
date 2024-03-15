@@ -15,6 +15,7 @@ const TextField = ({
     id,
     name,
     type,
+    required,
     ...rest
 }) => {
     const [showPassword, setShowPassword] = useState(false)
@@ -70,6 +71,7 @@ const TextField = ({
         <div className={classNames('field', className)}>
             <label htmlFor={id || name} className="label">
                 {label}
+                {required && '*'}
             </label>
             <div className="field has-addons" style={{ width: '100%!' }}>
                 <div className={classNames('control', 'is-expanded', 'has-icons-left')}>
@@ -80,6 +82,7 @@ const TextField = ({
                         type={showPassword ? 'text' : type}
                         value={currentValue}
                         onChange={onChangeHandler}
+                        required={required}
                         {...rest}
                     />
                     <span className="icon is-small is-left">{leftIcon}</span>

@@ -36,10 +36,10 @@ export const create = async (req, res) => {
 
 export const update = async (req, res) => {
     try {
-        const { currentUser, body } = req
+        const { currentUser, body, params } = req
 
         const updatedInventory = await InventoryModel.findOneAndUpdate(
-            { _id: body._id, $and: [{ organization: currentUser.organization }] },
+            { _id: params.id, $and: [{ organization: currentUser.organization }] },
             { $set: body },
             { new: true }
         )
@@ -66,13 +66,47 @@ export const show = async (req, res) => {
 
         const products = await InventoryProductModel.find({
             inventory: inventory
-        }).populate('product')
+        }).countDocuments()
 
         if (inventory) {
             return res.json({ ...inventory, products })
         } else {
             throw new Error('Inventory not found')
         }
+    } catch (error) {
+        console.error(error)
+        res.status(404).json({ message: 'Inventory not found' })
+    }
+}
+
+export const products = async (req, res) => {
+    try {
+        const { params } = req
+        const { page, limit } = req.query
+        const inventory = await InventoryModel.findById(params.id)
+
+        if (!inventory) {
+            return res.status(404).json({ message: 'Inventory not found' })
+        }
+
+        const query = {
+            inventory
+        }
+        const options = {
+            page: page || 1,
+            limit: limit || 20,
+            collation: {
+                locale: 'en'
+            },
+            sort: {
+                createdAt: 1
+            },
+            populate: 'product'
+        }
+
+        const inventoryProducts = await InventoryProductModel.paginate(query, options)
+
+        res.json(inventoryProducts)
     } catch (error) {
         console.error(error)
         res.status(404).json({ message: 'Inventory not found' })

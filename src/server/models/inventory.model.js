@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const inventorySchema = new mongoose.Schema(
     {
@@ -40,6 +41,8 @@ inventoryProductSchema.index(
     { product: 1, inventory: 1 },
     { name: 'inventoryProduct', unique: true }
 )
+
+inventoryProductSchema.plugin(mongoosePaginate)
 
 export const InventoryProductModel =
     mongoose.models.InventoryProduct || mongoose.model('InventoryProduct', inventoryProductSchema)

@@ -1,4 +1,4 @@
-import routes from '../routes'
+import routes from './routes'
 import apiClient from '@/client/lib/apiClient'
 
 export const getProducts = async (params = {}) => {

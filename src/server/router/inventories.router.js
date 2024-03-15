@@ -7,7 +7,8 @@ import {
     show,
     addProduct,
     updateProduct,
-    removeProduct
+    removeProduct,
+    products
 } from '@/server/controllers/inventories.controller'
 
 const router = Router()
@@ -16,8 +17,9 @@ const router = Router()
 router.get('/', index)
 router.get('/:id', show)
 router.post('/', create)
-router.patch('/', update)
+router.patch('/:id', update)
 router.delete('/', remove)
+router.get('/:id/products', products)
 router.post('/:id/products', addProduct)
 router.patch('/:id/products', updateProduct)
 router.delete('/:id/products', removeProduct)

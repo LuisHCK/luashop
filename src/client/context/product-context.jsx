@@ -37,8 +37,6 @@ export const ProductContextProvider = ({ children }) => {
     const submitProductForm = async () => {
         setIsLoading(true)
 
-        let result
-
         if (selectedProduct) {
             await updateProduct({ ...productForm, _id: selectedProduct._id })
         } else {
