@@ -5,6 +5,7 @@ import omit from 'lodash/omit'
 const initialState = {
     modalIsOpen: false,
     selectedProduct: null,
+    selectedProducts: {},
     productForm: {},
     isLoading: false
 }
@@ -18,6 +19,7 @@ export const ProductContextProvider = ({ children }) => {
     const [productForm, setProductForm] = useState(initialState.productForm)
     const [products, setProducts] = useState([])
     const [pagination, setPagination] = useState({})
+    const [selectedProducts, setSelectedProducts] = useState(initialState.selectedProduct)
 
     const toggleModal = () => setModalIsOpen((prev) => !prev)
 
@@ -65,6 +67,33 @@ export const ProductContextProvider = ({ children }) => {
         }
     }
 
+    const handleProductSelection = (checked, item) => {
+        setSelectedProducts((prev) => {
+            if (checked) {
+                return {
+                    ...prev,
+                    [item._id]: item
+                }
+            } else {
+                delete prev[item._id]
+                return { ...prev }
+            }
+        })
+    }
+
+    const handleSelectAllProducts = (checked) => {
+        if (checked) {
+            setSelectedProducts(
+                products.reduce((acc, product) => {
+                    acc[product._id] = product
+                    return acc
+                }, {})
+            )
+        } else {
+            setSelectedProducts(initialState.selectedProducts)
+        }
+    }
+
     useEffect(() => {
         loadProducts()
     }, [])
@@ -92,7 +121,11 @@ export const ProductContextProvider = ({ children }) => {
                 loadProducts,
                 pagination,
                 searchProduct,
-                changePage
+                changePage,
+                selectedProducts,
+                setSelectedProducts,
+                handleProductSelection,
+                handleSelectAllProducts
             }}
         >
             {children}

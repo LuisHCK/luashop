@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 const PageHeader = ({ children, title }) => {
     return (
-        <section className="mb-4 is-flex is-justify-content-space-between">
+        <section className="mb-4 is-flex is-justify-content-space-between is-align-items-center">
             <h2 className="title is-3">{title}</h2>
             {children}
         </section>

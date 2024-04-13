@@ -1,11 +1,21 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import get from 'lodash/get'
 import snakeCase from 'lodash/snakeCase'
 import ReactPaginate from 'react-paginate'
 import SearchBar from '@/client/components/searchbar'
 
-const DataTable = ({ columns, rows, selectable, pagination, onPageChange, onSearch }) => {
+const DataTable = ({
+    columns,
+    rows,
+    selectable,
+    pagination,
+    onPageChange,
+    onSearch,
+    onSelect,
+    onSelectAll,
+    selectedRows
+}) => {
     const renderCell = (render, row) => {
         if (typeof render === 'string') {
             return get(row, render)
@@ -13,10 +23,27 @@ const DataTable = ({ columns, rows, selectable, pagination, onPageChange, onSear
             return render(row)
         }
 
-        return `unknown render: ${render}`
+        return `unknown render method: ${render}`
     }
 
+    const selectAllRef = useRef(null)
+
     const showPagination = pagination && pagination.totalPages > 1
+
+    const handlePageChange = ({ selected }) => {
+        onPageChange(selected + 1)
+
+        if (selectAllRef.current) {
+            selectAllRef.current.checked = false
+        }
+    }
+
+    useEffect(() => {
+        if (rows && rows.length && selectAllRef.current) {
+            const allSelected = rows.every((row) => selectedRows && !!selectedRows[row._id])
+            selectAllRef.current.checked = allSelected
+        }
+    }, [pagination, selectedRows, rows])
 
     return (
         <table className="table is-striped is-hoverable is-fullwidth is-responsive">
@@ -31,7 +58,11 @@ const DataTable = ({ columns, rows, selectable, pagination, onPageChange, onSear
                 <tr>
                     {selectable && (
                         <th>
-                            <input type="checkbox" />
+                            <input
+                                ref={selectAllRef}
+                                onChange={({ target }) => onSelectAll(target.checked)}
+                                type="checkbox"
+                            />
                         </th>
                     )}
                     {columns.map((col) => (
@@ -44,7 +75,12 @@ const DataTable = ({ columns, rows, selectable, pagination, onPageChange, onSear
                     <tr key={`tr-${row._id}`}>
                         {selectable && (
                             <td>
-                                <input type="checkbox" />
+                                <input
+                                    onChange={({ target }) => onSelect(target.checked, row)}
+                                    defaultChecked={selectedRows && !!selectedRows[row._id]}
+                                    value={row._id}
+                                    type="checkbox"
+                                />
                             </td>
                         )}
                         {columns.map((col) => (
@@ -70,7 +106,7 @@ const DataTable = ({ columns, rows, selectable, pagination, onPageChange, onSear
                                 containerClassName="pagination-list"
                                 pageLinkClassName="pagination-link"
                                 activeLinkClassName="is-current"
-                                onPageChange={({ selected }) => onPageChange(selected + 1)}
+                                onPageChange={handlePageChange}
                             />
                         </td>
                     </tr>
@@ -94,7 +130,9 @@ DataTable.propTypes = {
         page: PropTypes.number
     }),
     onPageChange: PropTypes.func,
-    onSearch: PropTypes.func
+    onSearch: PropTypes.func,
+    onSelectAll: PropTypes.func,
+    onSelect: PropTypes.func
 }
 
 DataTable.defaultProps = {

@@ -5,7 +5,13 @@ import { IconPencil } from '@tabler/icons-react'
 import { ProductContext } from '@/client/context/product-context'
 
 const ProductsDataTable = ({ products, pagination, onPageChange, onSearch }) => {
-    const { setSelectedProduct, setModalIsOpen } = useContext(ProductContext)
+    const {
+        setSelectedProduct,
+        setModalIsOpen,
+        handleProductSelection,
+        selectedProducts,
+        handleSelectAllProducts
+    } = useContext(ProductContext)
 
     const openEditModal = (product) => {
         setSelectedProduct(product)
@@ -58,11 +64,15 @@ const ProductsDataTable = ({ products, pagination, onPageChange, onSearch }) => 
     ]
     return (
         <DataTable
+            selectable
             rows={products}
             columns={columns}
             pagination={pagination}
             onPageChange={onPageChange}
             onSearch={onSearch}
+            onSelect={handleProductSelection}
+            onSelectAll={handleSelectAllProducts}
+            selectedRows={selectedProducts}
         />
     )
 }

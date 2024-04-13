@@ -17,7 +17,7 @@ export const InventoryForm = () => {
     } = useContext(InventoryContext)
 
     const modalFooter = (
-        <Fragment>
+        <div className="buttons">
             <Button
                 disabled={isEmpty(inventoryForm)}
                 isLoading={isLoading}
@@ -30,7 +30,7 @@ export const InventoryForm = () => {
             <Button disabled={isLoading} onClick={toggleModal} isSecondary isRounded>
                 Cancel
             </Button>
-        </Fragment>
+        </div>
     )
 
     return (

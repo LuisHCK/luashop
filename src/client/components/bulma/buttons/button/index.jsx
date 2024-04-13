@@ -9,6 +9,7 @@ const Button = ({
     isLoading,
     isRounded,
     isSecondary,
+    isInfo,
     isPrimary,
     isSmall,
     isLink,
@@ -34,6 +35,7 @@ const Button = ({
                 'is-loading': isLoading,
                 'is-primary': isPrimary,
                 'is-secondary': isSecondary,
+                'is-info': isInfo,
                 'is-small': isSmall,
                 'is-rounded': isRounded,
                 'is-link': isLink
@@ -57,6 +59,7 @@ Button.propTypes = {
     isRounded: PropTypes.bool,
     isSecondary: PropTypes.bool,
     isPrimary: PropTypes.bool,
+    isInfo: PropTypes.bool,
     isSmall: PropTypes.bool,
     isLink: PropTypes.bool,
     type: PropTypes.oneOf(['button', 'submit', 'reset']),

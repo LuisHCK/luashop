@@ -1,21 +1,40 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import ProductsDataTable from '@/client/components/products/products-data-table'
-import { IconPlus } from '@tabler/icons-react'
+import { IconPlus, IconBuildingWarehouse } from '@tabler/icons-react'
 import ProductModal from '@/client/components/products/product-modal'
 import { ProductContext } from '@/client/context/product-context'
 import PageHeader from '@/client/components/page-header'
 import Button from '@/client/components/bulma/buttons/button'
+import isEmpty from 'lodash/isEmpty'
 
 const ProductCatalog = () => {
-    const { toggleModal, products, pagination, isLoading, searchProduct, changePage } =
-        useContext(ProductContext)
+    const {
+        toggleModal,
+        products,
+        pagination,
+        isLoading,
+        searchProduct,
+        changePage,
+        selectedProducts
+    } = useContext(ProductContext)
 
     return (
         <div>
             <PageHeader title="Product Catalog">
-                <Button onClick={toggleModal} icon={<IconPlus />} isRounded isPrimary>
-                    New Product
-                </Button>
+                <div className="buttons">
+                    <Button onClick={toggleModal} icon={<IconPlus />} isRounded isPrimary>
+                        New Product
+                    </Button>
+
+                    <Button
+                        icon={<IconBuildingWarehouse />}
+                        disabled={isEmpty(selectedProducts)}
+                        isRounded
+                        isInfo
+                    >
+                        Add to inventory
+                    </Button>
+                </div>
             </PageHeader>
             <section>
                 <ProductsDataTable

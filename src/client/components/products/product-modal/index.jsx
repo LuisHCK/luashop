@@ -1,4 +1,4 @@
-import React, { Fragment, useContext, useMemo } from 'react'
+import React, { useContext } from 'react'
 import isEmpty from 'lodash/isEmpty'
 import Modal from '@/client/components/modal'
 import ProductForm from '../product-form'
@@ -14,7 +14,7 @@ const ProductModal = () => {
     }
 
     const modalFooter = (
-        <Fragment>
+        <div className="buttons">
             <Button
                 disabled={isEmpty(productForm)}
                 isLoading={isLoading}
@@ -27,7 +27,7 @@ const ProductModal = () => {
             <Button disabled={isLoading} onClick={handleClose} isSecondary isRounded>
                 Cancel
             </Button>
-        </Fragment>
+        </div>
     )
     return (
         <Modal

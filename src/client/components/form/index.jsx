@@ -93,7 +93,7 @@ const Form = ({
     }, [formData])
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="columns is-mobile is-multiline">
             {title && <h3 className="is-size-3 mb-5">{title}</h3>}
 
             {fields.map((field) => (
