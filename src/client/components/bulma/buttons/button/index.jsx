@@ -29,6 +29,8 @@ const Button = ({
         }
     }
 
+    const innerText = label || children
+
     return (
         <button
             className={classNames('button', {
@@ -45,10 +47,7 @@ const Button = ({
             {...rest}
         >
             {icon && <span className="icon">{icon}</span>}
-            <span>
-                {label}
-                {children}
-            </span>
+            {!!innerText && <span>{innerText}</span>}
         </button>
     )
 }

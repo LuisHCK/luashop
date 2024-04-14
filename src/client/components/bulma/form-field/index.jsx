@@ -5,7 +5,7 @@ import classNames from 'classnames'
 const FormField = ({ type, label, placeholder, icon, isSmall, isRounded, ...rest }) => {
     return (
         <div className="field">
-            <label className="label">{label}</label>
+            {!!label && <label className="label">{label}</label>}
             <div className={classNames('control', { 'has-icons-left': !!icon })}>
                 <input
                     className={classNames('input', {

@@ -7,7 +7,8 @@ const initialState = {
     selectedProduct: null,
     selectedProducts: {},
     productForm: {},
-    isLoading: false
+    isLoading: false,
+    bulkImportModalIsOpen: false
 }
 
 export const ProductContext = createContext(initialState)
@@ -20,8 +21,13 @@ export const ProductContextProvider = ({ children }) => {
     const [products, setProducts] = useState([])
     const [pagination, setPagination] = useState({})
     const [selectedProducts, setSelectedProducts] = useState(initialState.selectedProduct)
+    const [bulkImportModalIsOpen, setBulkImportModalIsOpen] = useState(
+        initialState.bulkImportModalIsOpen
+    )
 
     const toggleModal = () => setModalIsOpen((prev) => !prev)
+
+    const toggleBulkImportModal = () => setBulkImportModalIsOpen((prev) => !prev)
 
     const clearProductForm = () => {
         setSelectedProduct(null)
@@ -125,7 +131,9 @@ export const ProductContextProvider = ({ children }) => {
                 selectedProducts,
                 setSelectedProducts,
                 handleProductSelection,
-                handleSelectAllProducts
+                handleSelectAllProducts,
+                bulkImportModalIsOpen,
+                toggleBulkImportModal
             }}
         >
             {children}

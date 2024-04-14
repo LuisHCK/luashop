@@ -44,6 +44,7 @@ const InventoriesDataTable = ({ inventories, pagination, onPageChange, onSearch 
             )
         }
     ]
+
     return (
         <DataTable
             rows={inventories}

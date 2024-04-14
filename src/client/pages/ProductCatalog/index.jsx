@@ -6,6 +6,7 @@ import { ProductContext } from '@/client/context/product-context'
 import PageHeader from '@/client/components/page-header'
 import Button from '@/client/components/bulma/buttons/button'
 import isEmpty from 'lodash/isEmpty'
+import ProductBatchImport from '@/client/components/inventory/product-batch-import'
 
 const ProductCatalog = () => {
     const {
@@ -15,7 +16,8 @@ const ProductCatalog = () => {
         isLoading,
         searchProduct,
         changePage,
-        selectedProducts
+        selectedProducts,
+        toggleBulkImportModal
     } = useContext(ProductContext)
 
     return (
@@ -27,6 +29,7 @@ const ProductCatalog = () => {
                     </Button>
 
                     <Button
+                        onClick={toggleBulkImportModal}
                         icon={<IconBuildingWarehouse />}
                         disabled={isEmpty(selectedProducts)}
                         isRounded
@@ -46,6 +49,7 @@ const ProductCatalog = () => {
                 />
             </section>
             <ProductModal />
+            <ProductBatchImport />
         </div>
     )
 }

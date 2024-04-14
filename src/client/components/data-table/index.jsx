@@ -14,7 +14,8 @@ const DataTable = ({
     onSearch,
     onSelect,
     onSelectAll,
-    selectedRows
+    selectedRows,
+    showSearchbar
 }) => {
     const renderCell = (render, row) => {
         if (typeof render === 'string') {
@@ -47,13 +48,15 @@ const DataTable = ({
 
     return (
         <table className="table is-striped is-hoverable is-fullwidth is-responsive">
-            <thead>
-                <tr>
-                    <td className="has-text-right" colSpan={columns.length}>
-                        <SearchBar onChange={onSearch} />
-                    </td>
-                </tr>
-            </thead>
+            {showSearchbar && (
+                <thead>
+                    <tr>
+                        <td className="has-text-right" colSpan={columns.length}>
+                            <SearchBar onChange={onSearch} />
+                        </td>
+                    </tr>
+                </thead>
+            )}
             <thead>
                 <tr>
                     {selectable && (
@@ -132,7 +135,8 @@ DataTable.propTypes = {
     onPageChange: PropTypes.func,
     onSearch: PropTypes.func,
     onSelectAll: PropTypes.func,
-    onSelect: PropTypes.func
+    onSelect: PropTypes.func,
+    showSearchbar: PropTypes.bool
 }
 
 DataTable.defaultProps = {
