@@ -17,8 +17,16 @@ const ProductCatalog = () => {
         searchProduct,
         changePage,
         selectedProducts,
+        setSelectedProducts,
         toggleBulkImportModal
     } = useContext(ProductContext)
+
+    useEffect(() => {
+        const savedImport = localStorage.getItem('bulkProductImport')
+        if (savedImport) {
+            setSelectedProducts(JSON.parse(savedImport))
+        }
+    }, [])
 
     return (
         <div>

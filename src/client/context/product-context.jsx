@@ -1,6 +1,7 @@
-import { createContext, useCallback, useEffect, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import { createProduct, getProducts, updateProduct } from '@/client/lib/backend/products'
 import omit from 'lodash/omit'
+import { getInventories } from '@/client/lib/backend/inventories'
 
 const initialState = {
     modalIsOpen: false,
@@ -8,8 +9,11 @@ const initialState = {
     selectedProducts: {},
     productForm: {},
     isLoading: false,
-    bulkImportModalIsOpen: false
+    bulkImportModalIsOpen: false,
+    inventories: []
 }
+
+let BULK_IMPORT_SAVE_TIMEOUT = null
 
 export const ProductContext = createContext(initialState)
 
@@ -20,10 +24,11 @@ export const ProductContextProvider = ({ children }) => {
     const [productForm, setProductForm] = useState(initialState.productForm)
     const [products, setProducts] = useState([])
     const [pagination, setPagination] = useState({})
-    const [selectedProducts, setSelectedProducts] = useState(initialState.selectedProduct)
+    const [selectedProducts, setSelectedProducts] = useState(initialState.selectedProducts)
     const [bulkImportModalIsOpen, setBulkImportModalIsOpen] = useState(
         initialState.bulkImportModalIsOpen
     )
+    const [inventories, setInventories] = useState(initialState.inventories)
 
     const toggleModal = () => setModalIsOpen((prev) => !prev)
 
@@ -88,17 +93,49 @@ export const ProductContextProvider = ({ children }) => {
     }
 
     const handleSelectAllProducts = (checked) => {
+        const updatedList = { ...selectedProducts }
+
         if (checked) {
-            setSelectedProducts(
-                products.reduce((acc, product) => {
-                    acc[product._id] = product
-                    return acc
-                }, {})
-            )
+            products.forEach((product) => {
+                updatedList[product._id] = product
+            })
         } else {
-            setSelectedProducts(initialState.selectedProducts)
+            products.forEach(({ _id }) => {
+                if (updatedList[_id]) {
+                    delete updatedList[_id]
+                }
+            })
         }
+
+        setSelectedProducts(updatedList)
     }
+
+    const updateSelectedProductAttribute = ({ id, field, value }) => {
+        const updatedList = { ...selectedProducts }
+
+        if (updatedList[id]) {
+            updatedList[id] = { ...updatedList[id], [field]: value }
+        }
+
+        setSelectedProducts(updatedList)
+
+        // Store changes in local storage after a delay
+        clearTimeout(BULK_IMPORT_SAVE_TIMEOUT)
+
+        BULK_IMPORT_SAVE_TIMEOUT = setTimeout(() => {
+            console.log('Saved to local storage')
+            localStorage.setItem('bulkProductImport', JSON.stringify(updatedList))
+        }, 3000)
+    }
+
+    useEffect(() => {
+        const getData = async () => {
+            const data = await getInventories()
+            console.log(data)
+        }
+
+        getData()
+    }, [])
 
     useEffect(() => {
         loadProducts()
@@ -133,7 +170,8 @@ export const ProductContextProvider = ({ children }) => {
                 handleProductSelection,
                 handleSelectAllProducts,
                 bulkImportModalIsOpen,
-                toggleBulkImportModal
+                toggleBulkImportModal,
+                updateSelectedProductAttribute
             }}
         >
             {children}

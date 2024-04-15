@@ -13,8 +13,13 @@ import Modal from '@/client/components/modal'
 import styles from './styles.module.scss'
 
 const ProductBatchImport = () => {
-    const { selectedProducts, bulkImportModalIsOpen, toggleBulkImportModal, isLoading } =
-        useContext(ProductContext)
+    const {
+        selectedProducts,
+        bulkImportModalIsOpen,
+        toggleBulkImportModal,
+        isLoading,
+        updateSelectedProductAttribute
+    } = useContext(ProductContext)
 
     const rows = useMemo(() => {
         if (selectedProducts) {
@@ -40,12 +45,16 @@ const ProductBatchImport = () => {
         },
         {
             name: 'Price',
-            render: () => (
+            render: (row) => (
                 <FormField
                     name="price"
                     icon={<IconCurrencyDollar height={16} min={0} />}
-                    onChange={() => {}}
+                    onChange={({ target }) => {
+                        const { name, value } = target
+                        updateSelectedProductAttribute({ id: row._id, field: name, value })
+                    }}
                     type="number"
+                    value={row.price || ''}
                     isSmall
                     isRounded
                 />
@@ -53,11 +62,15 @@ const ProductBatchImport = () => {
         },
         {
             name: 'Stock',
-            render: () => (
+            render: (row) => (
                 <FormField
-                    name="price"
+                    name="stock"
                     icon={<IconPackage height={16} min={0} />}
-                    onChange={() => {}}
+                    onChange={({ target }) => {
+                        const { name, value } = target
+                        updateSelectedProductAttribute({ id: row._id, field: name, value })
+                    }}
+                    value={row.stock || ''}
                     type="number"
                     isSmall
                     isRounded
@@ -66,12 +79,16 @@ const ProductBatchImport = () => {
         },
         {
             name: 'Lot',
-            render: () => (
+            render: (row) => (
                 <FormField
-                    name="price"
+                    name="lot"
                     icon={<IconBuildingFactory2 height={16} min={0} />}
-                    onChange={() => {}}
+                    onChange={({ target }) => {
+                        const { name, value } = target
+                        updateSelectedProductAttribute({ id: row._id, field: name, value })
+                    }}
                     type="number"
+                    value={row.lot || ''}
                     isSmall
                     isRounded
                 />

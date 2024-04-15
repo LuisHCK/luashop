@@ -80,7 +80,7 @@ const DataTable = ({
                             <td>
                                 <input
                                     onChange={({ target }) => onSelect(target.checked, row)}
-                                    defaultChecked={selectedRows && !!selectedRows[row._id]}
+                                    checked={selectedRows && !!selectedRows[row._id]}
                                     value={row._id}
                                     type="checkbox"
                                 />
