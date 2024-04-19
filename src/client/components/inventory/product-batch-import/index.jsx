@@ -11,6 +11,7 @@ import {
 import FormField from '@/client/components/bulma/form-field'
 import Modal from '@/client/components/modal'
 import styles from './styles.module.scss'
+import Select from '@/client/components/bulma/select'
 
 const ProductBatchImport = () => {
     const {
@@ -18,7 +19,12 @@ const ProductBatchImport = () => {
         bulkImportModalIsOpen,
         toggleBulkImportModal,
         isLoading,
-        updateSelectedProductAttribute
+        updateSelectedProductAttribute,
+        inventories,
+        selectedInventory,
+        setSelectedInventory,
+        clearBulkImport,
+        submitBulkImport
     } = useContext(ProductContext)
 
     const rows = useMemo(() => {
@@ -111,13 +117,23 @@ const ProductBatchImport = () => {
         }
     ]
 
+    const handleCancel = () => {
+        toggleBulkImportModal()
+        clearBulkImport()
+    }
+
+    const disabledSubmit = useMemo(
+        () => isLoading || !selectedInventory || !!selectedProducts?.length,
+        [isLoading, selectedInventory]
+    )
+
     const Footer = (
         <div className="buttons">
-            <Button disabled={isLoading} onClick={() => {}} isPrimary isRounded>
+            <Button disabled={disabledSubmit} onClick={submitBulkImport} isPrimary isRounded>
                 Submit
             </Button>
-            <Button disabled={isLoading} onClick={toggleBulkImportModal} isSecondary isRounded>
-                Cancel
+            <Button disabled={isLoading} onClick={handleCancel} isSecondary isRounded>
+                Cancel import
             </Button>
         </div>
     )
@@ -130,6 +146,14 @@ const ProductBatchImport = () => {
             onClose={toggleBulkImportModal}
             footer={Footer}
         >
+            <Select
+                label="Inventory"
+                options={inventories}
+                optionDisplay="name"
+                optionKey="_id"
+                onChange={({ target }) => setSelectedInventory(target.value)}
+                value={selectedInventory}
+            />
             {bulkImportModalIsOpen && <DataTable rows={rows} columns={columns} />}
         </Modal>
     )

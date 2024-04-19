@@ -1,11 +1,33 @@
 import { InventoryModel, InventoryProductModel } from '@/server/models/inventory.model'
+import isArray from 'lodash/isArray'
+
+const useInventory = async (req) => {
+    const { params, currentUser } = req
+    return await InventoryModel.findOne({
+        _id: params.id,
+        company: currentUser.company
+    })
+}
 
 export const index = async (req, res) => {
     try {
         const { currentUser } = req
-        const inventories = await InventoryModel.find({
+        let inventories = await InventoryModel.find({
             organization: currentUser.organization._id
-        })
+        }).lean()
+
+        inventories = await Promise.all(
+            inventories.map(async (i) => {
+                const products = await InventoryProductModel.find({
+                    inventory: i._id
+                }).countDocuments()
+
+                return {
+                    ...i,
+                    products
+                }
+            })
+        )
 
         res.json(inventories)
         // const inventories = await InventoryModel.find()
@@ -161,12 +183,9 @@ export const addProduct = async (req, res) => {
 
 export const removeProduct = async (req, res) => {
     try {
-        const { params, body, currentUser } = req
+        const { body } = req
 
-        const inventory = await InventoryModel.findOne({
-            _id: params.id,
-            company: currentUser.company
-        })
+        const inventory = await useInventory(req)
 
         await InventoryProductModel.findOneAndDelete({
             inventory: inventory._id,
@@ -182,12 +201,9 @@ export const removeProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     try {
-        const { params, body, currentUser } = req
+        const { body } = req
 
-        const inventory = await InventoryModel.findOne({
-            _id: params.id,
-            company: currentUser.company
-        })
+        const inventory = await useInventory(req)
 
         const updatedInventoryProduct = await InventoryProductModel.findOneAndUpdate(
             {
@@ -202,5 +218,30 @@ export const updateProduct = async (req, res) => {
     } catch (error) {
         console.error(error)
         res.status(422).json({ message: `Can't update inventory-product` })
+    }
+}
+
+export const bulkImport = async (req, res) => {
+    try {
+        const { body } = req
+        const inventory = await useInventory(req)
+
+        if (isArray(body)) {
+            const productsToAdd = body.map((product) => ({
+                inventory: inventory._id,
+                product: product._id,
+                stock: product.stock || 0,
+                price: product.price || 0,
+                lot: product.lot || 0
+            }))
+
+            const data = await InventoryProductModel.insertMany(productsToAdd)
+            return res.json(data)
+        } else {
+            return res.status(422).json({ message: `Products to add should be an array` })
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(422).json({ message: `Can't import products` })
     }
 }

@@ -28,6 +28,12 @@ const getInventoryProducts = async (id) => {
     return res
 }
 
+export const bulkImportProducts = async (id, body) => {
+    const path = `${apiRoutes.INVENTORIES}${id}/import-products`
+    const res = await apiClient.post(path, body)
+    return res
+}
+
 export default {
     getInventories,
     createInventory,

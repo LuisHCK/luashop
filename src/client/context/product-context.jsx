@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from 'react'
 import { createProduct, getProducts, updateProduct } from '@/client/lib/backend/products'
 import omit from 'lodash/omit'
-import { getInventories } from '@/client/lib/backend/inventories'
+import { bulkImportProducts, getInventories } from '@/client/lib/backend/inventories'
 
 const initialState = {
     modalIsOpen: false,
@@ -10,7 +10,8 @@ const initialState = {
     productForm: {},
     isLoading: false,
     bulkImportModalIsOpen: false,
-    inventories: []
+    inventories: [],
+    selectedInventory: ''
 }
 
 let BULK_IMPORT_SAVE_TIMEOUT = null
@@ -29,6 +30,7 @@ export const ProductContextProvider = ({ children }) => {
         initialState.bulkImportModalIsOpen
     )
     const [inventories, setInventories] = useState(initialState.inventories)
+    const [selectedInventory, setSelectedInventory] = useState(initialState.selectedInventory)
 
     const toggleModal = () => setModalIsOpen((prev) => !prev)
 
@@ -128,10 +130,38 @@ export const ProductContextProvider = ({ children }) => {
         }, 3000)
     }
 
+    const clearBulkImport = () => {
+        localStorage.removeItem('bulkProductImport')
+        setSelectedInventory('')
+        setSelectedProducts(initialState.selectedProducts)
+    }
+
+    const submitBulkImport = async () => {
+        try {
+            const productsToAdd = Object.keys(selectedProducts).map((key) => {
+                const { _id, price, lot, stock } = selectedProducts[key]
+
+                return { _id, price, lot, stock }
+            })
+
+            const res = await bulkImportProducts(selectedInventory, productsToAdd)
+
+            setSelectedProducts(initialState.selectedProducts)
+            setSelectedInventory(initialState.selectedInventory)
+            setBulkImportModalIsOpen(false)
+
+            console.log(res)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     useEffect(() => {
         const getData = async () => {
             const data = await getInventories()
-            console.log(data)
+            if (data) {
+                setInventories(data)
+            }
         }
 
         getData()
@@ -171,7 +201,12 @@ export const ProductContextProvider = ({ children }) => {
                 handleSelectAllProducts,
                 bulkImportModalIsOpen,
                 toggleBulkImportModal,
-                updateSelectedProductAttribute
+                updateSelectedProductAttribute,
+                inventories,
+                selectedInventory,
+                setSelectedInventory,
+                clearBulkImport,
+                submitBulkImport
             }}
         >
             {children}

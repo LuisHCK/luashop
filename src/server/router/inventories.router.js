@@ -8,7 +8,8 @@ import {
     addProduct,
     updateProduct,
     removeProduct,
-    products
+    products,
+    bulkImport
 } from '@/server/controllers/inventories.controller'
 
 const router = Router()
@@ -23,5 +24,6 @@ router.get('/:id/products', products)
 router.post('/:id/products', addProduct)
 router.patch('/:id/products', updateProduct)
 router.delete('/:id/products', removeProduct)
+router.post('/:id/import-products', bulkImport)
 
 export default router

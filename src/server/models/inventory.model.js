@@ -37,13 +37,14 @@ const inventoryProductSchema = new mongoose.Schema({
     lot: String
 })
 
-inventoryProductSchema.index(
-    { product: 1, inventory: 1 },
-    { name: 'inventoryProduct', unique: true }
-)
+/** INVENTORY - PRODUCT */
+inventoryProductSchema.index({ product: 1, inventory: 1 }, { unique: true })
+
+inventoryProductSchema.index({ name: 'inventoryProduct', unique: true })
 
 inventoryProductSchema.plugin(mongoosePaginate)
 
+/** INITIALIZATION */
 export const InventoryProductModel =
     mongoose.models.InventoryProduct || mongoose.model('InventoryProduct', inventoryProductSchema)
 

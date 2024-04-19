@@ -14,7 +14,7 @@ const InventoriesDataTable = ({ inventories, pagination, onPageChange, onSearch 
         { name: 'Location', render: 'location' },
         {
             name: 'Total products',
-            render: () => <span className="tag is-primary is-rounded">0</span>
+            render: (row) => <span className="tag is-primary is-rounded">{row.products}</span>
         },
         { name: 'Description', render: 'description' },
         {

@@ -21,7 +21,7 @@ const ProductItem = ({ product }) => {
                 <div className="image">
                     <img
                         className={styles.thumbnail}
-                        src="/public/thumbnail.jpeg"
+                        src="/thumbnail.jpeg"
                         alt={product?.name}
                     />
                 </div>

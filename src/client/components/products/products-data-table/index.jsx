@@ -22,7 +22,7 @@ const ProductsDataTable = ({ products, pagination, onPageChange, onSearch }) => 
         {
             name: 'Photo',
             render: (row) => (
-                <img width={64} height={64} src={row.photo || '/public/thumbnail.jpeg'} />
+                <img width={64} height={64} src={row.photo || '/thumbnail.jpeg'} />
             )
         },
         { name: 'Name', render: 'name' },
