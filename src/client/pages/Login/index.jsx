@@ -19,13 +19,7 @@ const LoginPage = () => {
         setLoading(true)
         setErrorMessage(undefined)
 
-        const res = await api.post(
-            '/api/auth/sign-in',
-            formData,
-            (res) => {
-                console.log(res)
-            }
-        )
+        const res = await api.post('/api/auth/sign-in', formData)
 
         if (res) {
             const expires = parseISO(res.exp)

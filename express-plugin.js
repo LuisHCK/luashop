@@ -8,7 +8,7 @@ export default function express(path) {
                     const { app } = await server.ssrLoadModule(path)
                     app(req, res, next)
                 } catch (error) {
-                    console.log(error)
+                    console.error(error)
                 }
             })
         }
